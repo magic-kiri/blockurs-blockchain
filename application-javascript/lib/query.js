@@ -10,3 +10,13 @@ exports.registrationQuery = `
         }
     }
 `;
+
+exports.loginQuery = `
+    query MyQuery($_eq: String = "") {
+        User(where: {identifier: {_eq: $_eq}}) {
+        index
+        identifier
+        privateKey
+        }
+    }
+`;

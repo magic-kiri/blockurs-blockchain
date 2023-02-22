@@ -1,14 +1,17 @@
 const express = require("express");
 const router = express.Router();
 const { main } = require("./../app");
-var bodyParser = require("body-parser");
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 
 const register = require("../lib/registration");
+const login = require("../lib/login");
 
 var contract;
 main().then((cnt) => (contract = cnt));
 
 router.use(bodyParser.json());
+router.use(cookieParser());
 
 function prettyJSONString(inputString) {
   return JSON.stringify(JSON.parse(inputString), null, 2);
@@ -37,11 +40,14 @@ router.get("/", async (req, res) => {
 
 router.post("/registration", async (req, res) => {
   const { identifier, metadata } = req.body;
-  console.log(identifier, metadata);
-  //   res.json({ status: "ok" });
   const response = await register(identifier, metadata, contract);
-  //   console.log(response);
   res.json(response);
+});
+
+router.post("/login", async (req, res) => {
+  const { identifier, privateKey } = req.body;
+  const response = await login(identifier, privateKey);
+  res.cookie("loginCookie", JSON.stringify(response.cookie)).json(response);
 });
 
 module.exports = router;
