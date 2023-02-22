@@ -20,7 +20,7 @@ const {
 } = require("../../test-application/javascript/AppUtil.js");
 // const createBlockURSServer = require('./api')
 const channelName = "mychannel";
-const chaincodeName = "basic2";
+const chaincodeName = "chaincode";
 const mspOrg1 = "Org1MSP";
 const walletPath = path.join(__dirname, "wallet");
 const org1UserId = "appUser";
@@ -135,11 +135,11 @@ async function main() {
       // This type of transaction would only be run once by an application the first time it was started after it
       // deployed the first time. Any updates to the chaincode deployed later would likely not need to run
       // an "init" type function.
-      console.log(
-        "\n--> Submit Transaction: InitLedger, function creates the initial set of assets on the ledger"
-      );
-      await contract.submitTransaction("InitLedger");
-      console.log("*** Result: committed");
+    //   console.log(
+    //     "\n--> Submit Transaction: InitLedger, function creates the initial set of assets on the ledger"
+    //   );
+    //   await contract.submitTransaction("InitLedger");
+    //   console.log("*** Result: committed");
 
       // Let's try a query type operation (function).
       // This will be sent to just one peer and the results will be shown.
