@@ -13,14 +13,14 @@ const { Contract } = require("fabric-contract-api");
 
 class BlockURS extends Contract {
   // CreateUser issues a new asset to the world state with given details.
-  async CreateUser(ctx, index, identifier, publicKey, metaHash) {
+  async CreateUser(ctx, index, identifier, publicKey, metaHash, fileType) {
     const id = "Reg-" + identifier;
     const exists = await this.AssetExists(ctx, id);
     if (exists) {
       throw new Error(`The asset ${index} already exists`);
     }
 
-    const user = { index, identifier, publicKey, metaHash };
+    const user = { index, identifier, publicKey, metaHash, fileType };
     // we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
     await ctx.stub.putState(
       id,
@@ -28,6 +28,54 @@ class BlockURS extends Contract {
     );
     return JSON.stringify(user);
   }
+
+  async GetAllUser(ctx) {
+		let queryString = {};
+		queryString.selector = {};
+		queryString.selector.fileType = 'registered_user';
+		// queryString.selector.owner = owner;
+		return await this.GetQueryResultForQueryString(ctx, JSON.stringify(queryString)); //shim.success(queryResults);
+	}
+  async GetQueryResultForQueryString(ctx, queryString) {
+
+		let resultsIterator = await ctx.stub.getQueryResult(queryString);
+		let results = await this._GetAllResults(resultsIterator, false);
+
+		return JSON.stringify(results);
+	}
+
+  async _GetAllResults(iterator, isHistory) {
+		let allResults = [];
+		let res = await iterator.next();
+		while (!res.done) {
+			if (res.value && res.value.value.toString()) {
+				let jsonRes = {};
+				console.log(res.value.value.toString('utf8'));
+				if (isHistory && isHistory === true) {
+					jsonRes.TxId = res.value.txId;
+					jsonRes.Timestamp = res.value.timestamp;
+					try {
+						jsonRes.Value = JSON.parse(res.value.value.toString('utf8'));
+					} catch (err) {
+						console.log(err);
+						jsonRes.Value = res.value.value.toString('utf8');
+					}
+				} else {
+					jsonRes.Key = res.value.key;
+					try {
+						jsonRes.Record = JSON.parse(res.value.value.toString('utf8'));
+					} catch (err) {
+						console.log(err);
+						jsonRes.Record = res.value.value.toString('utf8');
+					}
+				}
+				allResults.push(jsonRes);
+			}
+			res = await iterator.next();
+		}
+		iterator.close();
+		return allResults;
+	}
 
   // CreateAsset issues a new asset to the world state with given details.
   async CreateAsset(ctx, id, color, size, owner, appraisedValue) {

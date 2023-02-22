@@ -26,7 +26,8 @@ const register = async (identifier, metadata, contract) => {
       index,
       identifier,
       publicKey,
-      metaHash
+      metaHash,
+      "registered_user"
     );
     console.log("*** Result: committed");
     if (`${result}` !== "") {

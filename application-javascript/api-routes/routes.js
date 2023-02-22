@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 
 const register = require("../lib/registration");
 const login = require("../lib/login");
+const { getAllUser } = require("../lib/providing");
 
 var contract;
 main().then((cnt) => (contract = cnt));
@@ -20,7 +21,7 @@ function prettyJSONString(inputString) {
 router.get("/getData", async function (req, res, next) {
   try {
     console.log("\n--> Evaluate Transaction: DeleteAsset, function deletese");
-    let result = await contract.submitTransaction("DeleteAsset", "Reg-user02");
+    let result = await contract.submitTransaction("DeleteAsset", "Reg-user01");
     console.log(`*** Result: ${prettyJSONString(result.toString())}`);
     res.send(result.toString());
   } catch (err) {
@@ -34,7 +35,9 @@ router.get("/", async (req, res) => {
   console.log(
     "\n--> Evaluate Transaction: GetAllAssets, function returns all the current assets on the ledger"
   );
-  let result = await contract.evaluateTransaction("GetAllAssets");
+  const query = { fileType: "registered_user" };
+
+  let result = await contract.evaluateTransaction("GetAllUser");
   res.send(`*** Result: ${prettyJSONString(result.toString())}`);
 });
 
@@ -48,6 +51,11 @@ router.post("/login", async (req, res) => {
   const { identifier, privateKey } = req.body;
   const response = await login(identifier, privateKey);
   res.cookie("loginCookie", JSON.stringify(response.cookie)).json(response);
+});
+
+router.get("/getUserList", async (req, res) => {
+  const result = await getAllUser(contract);
+  res.json(result);
 });
 
 module.exports = router;

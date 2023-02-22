@@ -20,7 +20,7 @@ const {
 } = require("../../test-application/javascript/AppUtil.js");
 // const createBlockURSServer = require('./api')
 const channelName = "mychannel";
-const chaincodeName = "chaincode";
+const chaincodeName = "test5";
 const mspOrg1 = "Org1MSP";
 const walletPath = path.join(__dirname, "wallet");
 const org1UserId = "appUser";
@@ -30,7 +30,6 @@ function prettyJSONString(inputString) {
 }
 
 var contract = null;
-
 
 // pre-requisites:
 // - fabric-sample two organization test-network setup with two peers, ordering service,
@@ -130,24 +129,24 @@ async function main() {
       // Get the contract from the network.
       contract = network.getContract(chaincodeName);
 
-    //   createBlockURSServer(contract);
+      //   createBlockURSServer(contract);
       // Initialize a set of asset data on the channel using the chaincode 'InitLedger' function.
       // This type of transaction would only be run once by an application the first time it was started after it
       // deployed the first time. Any updates to the chaincode deployed later would likely not need to run
       // an "init" type function.
-    //   console.log(
-    //     "\n--> Submit Transaction: InitLedger, function creates the initial set of assets on the ledger"
-    //   );
-    //   await contract.submitTransaction("InitLedger");
-    //   console.log("*** Result: committed");
+      //   console.log(
+      //     "\n--> Submit Transaction: InitLedger, function creates the initial set of assets on the ledger"
+      //   );
+      //   await contract.submitTransaction("InitLedger");
+      //   console.log("*** Result: committed");
 
       // Let's try a query type operation (function).
       // This will be sent to just one peer and the results will be shown.
-    //   console.log(
-    //     "\n--> Evaluate Transaction: GetAllAssets, function returns all the current assets on the ledger"
-    //   );
-    //   let result = await contract.evaluateTransaction("GetAllAssets");
-    //   console.log(`*** Result: ${prettyJSONString(result.toString())}`);
+      //   console.log(
+      //     "\n--> Evaluate Transaction: GetAllAssets, function returns all the current assets on the ledger"
+      //   );
+      //   let result = await contract.evaluateTransaction("GetAllAssets");
+      //   console.log(`*** Result: ${prettyJSONString(result.toString())}`);
 
       // Now let's try to submit a transaction.
       // This will be sent to both peers and if both peers endorse the transaction, the endorsed proposal will be sent
@@ -160,17 +159,17 @@ async function main() {
       // 	console.log(`*** Result: ${prettyJSONString(result.toString())}`);
       // }
 
-    //   console.log(
-    //     "\n--> Evaluate Transaction: ReadAsset, function returns an asset with a given assetID"
-    //   );
-    //   result = await contract.evaluateTransaction("ReadAsset", "asset130");
-    //   console.log(`*** Result: ${prettyJSONString(result.toString())}`);
+      //   console.log(
+      //     "\n--> Evaluate Transaction: ReadAsset, function returns an asset with a given assetID"
+      //   );
+      //   result = await contract.evaluateTransaction("ReadAsset", "asset130");
+      //   console.log(`*** Result: ${prettyJSONString(result.toString())}`);
 
-    //   console.log(
-    //     '\n--> Evaluate Transaction: AssetExists, function returns "true" if an asset with given assetID exist'
-    //   );
-    //   result = await contract.evaluateTransaction("AssetExists", "asset130");
-    //   console.log(`*** Result: ${prettyJSONString(result.toString())}`);
+      //   console.log(
+      //     '\n--> Evaluate Transaction: AssetExists, function returns "true" if an asset with given assetID exist'
+      //   );
+      //   result = await contract.evaluateTransaction("AssetExists", "asset130");
+      //   console.log(`*** Result: ${prettyJSONString(result.toString())}`);
 
       // console.log('\n--> Submit Transaction: UpdateAsset asset1, change the appraisedValue to 350');
       // await contract.submitTransaction('UpdateAsset', 'asset1', 'blue', '5', 'Tomoko', '350');
@@ -200,12 +199,12 @@ async function main() {
     } finally {
       // Disconnect from the gateway when the application is closing
       // This will close all connections to the network
-    //   gateway.disconnect();
+      //   gateway.disconnect();
     }
   } catch (error) {
     console.error(`******** FAILED to run the application: ${error}`);
   }
-  return contract
+  return contract;
 }
 
 // main();
