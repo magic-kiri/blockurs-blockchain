@@ -20,7 +20,7 @@ const {
 } = require("../../test-application/javascript/AppUtil.js");
 // const createBlockURSServer = require('./api')
 const channelName = "mychannel";
-const chaincodeName = "test5";
+const chaincodeName = "trial";
 const mspOrg1 = "Org1MSP";
 const walletPath = path.join(__dirname, "wallet");
 const org1UserId = "appUser";

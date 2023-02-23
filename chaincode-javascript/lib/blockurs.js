@@ -29,53 +29,93 @@ class BlockURS extends Contract {
     return JSON.stringify(user);
   }
 
+  async AddScore(
+    ctx,
+    type,
+    userIdentifier,
+    encryptedScore,
+    providerIdentifier
+  ) {
+    const id = `Score-${userIdentifier}`;
+    const exists = await this.AssetExists(ctx, id);
+    let reputationScores = {
+      financialEncryptedScores: [],
+      eCommerceEncryptedScores: [],
+    };
+    if (exists) {
+      reputationScores = JSON.parse((await ctx.stub.getState(id)).toString());
+    }
+    try {
+      if (type == "financial") {
+        reputationScores.financialEncryptedScores.push({
+          providerIdentifier,
+          encryptedScore,
+        });
+      } else {
+        reputationScores.eCommerceEncryptedScores.push({
+          providerIdentifier,
+          encryptedScore,
+        });
+      }
+      await ctx.stub.putState(
+        id,
+        Buffer.from(stringify(sortKeysRecursive(reputationScores)))
+      );
+    } catch (err) {
+      return JSON.stringify({ exists, reputationScores });
+    }
+    return JSON.parse(JSON.stringify(reputationScores));
+  }
+
   async GetAllUser(ctx) {
-		let queryString = {};
-		queryString.selector = {};
-		queryString.selector.fileType = 'registered_user';
-		// queryString.selector.owner = owner;
-		return await this.GetQueryResultForQueryString(ctx, JSON.stringify(queryString)); //shim.success(queryResults);
-	}
+    let queryString = {};
+    queryString.selector = {};
+    queryString.selector.fileType = "registered_user";
+    // queryString.selector.owner = owner;
+    return await this.GetQueryResultForQueryString(
+      ctx,
+      JSON.stringify(queryString)
+    ); //shim.success(queryResults);
+  }
   async GetQueryResultForQueryString(ctx, queryString) {
+    let resultsIterator = await ctx.stub.getQueryResult(queryString);
+    let results = await this._GetAllResults(resultsIterator, false);
 
-		let resultsIterator = await ctx.stub.getQueryResult(queryString);
-		let results = await this._GetAllResults(resultsIterator, false);
-
-		return JSON.stringify(results);
-	}
+    return JSON.stringify(results);
+  }
 
   async _GetAllResults(iterator, isHistory) {
-		let allResults = [];
-		let res = await iterator.next();
-		while (!res.done) {
-			if (res.value && res.value.value.toString()) {
-				let jsonRes = {};
-				console.log(res.value.value.toString('utf8'));
-				if (isHistory && isHistory === true) {
-					jsonRes.TxId = res.value.txId;
-					jsonRes.Timestamp = res.value.timestamp;
-					try {
-						jsonRes.Value = JSON.parse(res.value.value.toString('utf8'));
-					} catch (err) {
-						console.log(err);
-						jsonRes.Value = res.value.value.toString('utf8');
-					}
-				} else {
-					jsonRes.Key = res.value.key;
-					try {
-						jsonRes.Record = JSON.parse(res.value.value.toString('utf8'));
-					} catch (err) {
-						console.log(err);
-						jsonRes.Record = res.value.value.toString('utf8');
-					}
-				}
-				allResults.push(jsonRes);
-			}
-			res = await iterator.next();
-		}
-		iterator.close();
-		return allResults;
-	}
+    let allResults = [];
+    let res = await iterator.next();
+    while (!res.done) {
+      if (res.value && res.value.value.toString()) {
+        let jsonRes = {};
+        console.log(res.value.value.toString("utf8"));
+        if (isHistory && isHistory === true) {
+          jsonRes.TxId = res.value.txId;
+          jsonRes.Timestamp = res.value.timestamp;
+          try {
+            jsonRes.Value = JSON.parse(res.value.value.toString("utf8"));
+          } catch (err) {
+            console.log(err);
+            jsonRes.Value = res.value.value.toString("utf8");
+          }
+        } else {
+          jsonRes.Key = res.value.key;
+          try {
+            jsonRes.Record = JSON.parse(res.value.value.toString("utf8"));
+          } catch (err) {
+            console.log(err);
+            jsonRes.Record = res.value.value.toString("utf8");
+          }
+        }
+        allResults.push(jsonRes);
+      }
+      res = await iterator.next();
+    }
+    iterator.close();
+    return allResults;
+  }
 
   // CreateAsset issues a new asset to the world state with given details.
   async CreateAsset(ctx, id, color, size, owner, appraisedValue) {

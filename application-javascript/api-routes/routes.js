@@ -6,7 +6,7 @@ const cookieParser = require("cookie-parser");
 
 const register = require("../lib/registration");
 const login = require("../lib/login");
-const { getAllUser } = require("../lib/providing");
+const { getAllUser, pushReputationScore } = require("../lib/providing");
 
 var contract;
 main().then((cnt) => (contract = cnt));
@@ -56,6 +56,25 @@ router.post("/login", async (req, res) => {
 router.get("/getUserList", async (req, res) => {
   const result = await getAllUser(contract);
   res.json(result);
+});
+
+router.post("/pushScores", async (req, res) => {
+  const { data, providerIdentifier, type } = req.body;
+  // console.log(data, providerIdentifier, type);
+  // res.send("DONE");
+  const response = await pushReputationScore(
+    contract,
+    type,
+    providerIdentifier,
+    data
+  );
+
+  res.json(response);
+});
+
+router.get("/read", async (req, res) => {
+  const resp = await contract.evaluateTransaction("ReadAsset", "Score-user02");
+  return res.send(resp);
 });
 
 module.exports = router;

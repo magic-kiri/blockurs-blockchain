@@ -9,3 +9,23 @@ exports.getAllUser = async (contract) => {
   });
   return res;
 };
+
+exports.pushReputationScore = async (
+  contract,
+  type,
+  providerIdentifier,
+  data
+) => {
+  const response = data.map(async ({ userIdentifier, encryptedScore }) => {
+    const res = await contract.submitTransaction(
+      "AddScore",
+      type,
+      userIdentifier,
+      encryptedScore,
+      providerIdentifier
+    );
+    console.log(res);
+    return res;
+  });
+  return await Promise.all(response);
+};
