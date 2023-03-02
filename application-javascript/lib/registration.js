@@ -3,7 +3,7 @@ const apiCall = require("./dbCall");
 const { registrationQuery } = require("./query");
 const sha256 = require("js-sha256");
 
-const register = async (identifier, metadata, contract) => {
+const register = async (identifier, metadata, passHash, name, contract) => {
   const cs = new CryptoSecurity();
   const { publicKey, privateKey } = cs.getKey(identifier);
 
@@ -12,6 +12,8 @@ const register = async (identifier, metadata, contract) => {
     metadata: JSON.stringify(metadata),
     publicKey,
     privateKey,
+    passHash,
+    name
   });
   const index = data.insert_User_one.index;
 

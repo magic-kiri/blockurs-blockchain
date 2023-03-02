@@ -29,6 +29,11 @@ class BlockURS extends Contract {
     return JSON.stringify(user);
   }
 
+  async GetScoreByID(ctx, identifier) {
+    const id = `Score-${identifier}`;
+    return await this.ReadAsset(ctx, id);
+  }
+
   async AddScore(
     ctx,
     type,
@@ -39,23 +44,19 @@ class BlockURS extends Contract {
     const id = `Score-${userIdentifier}`;
     const exists = await this.AssetExists(ctx, id);
     let reputationScores = {
-      financialEncryptedScores: [],
-      eCommerceEncryptedScores: [],
+      financialEncryptedScores: {},
+      eCommerceEncryptedScores: {},
     };
     if (exists) {
       reputationScores = JSON.parse((await ctx.stub.getState(id)).toString());
     }
     try {
       if (type == "financial") {
-        reputationScores.financialEncryptedScores.push({
-          providerIdentifier,
-          encryptedScore,
-        });
+        reputationScores.financialEncryptedScores[providerIdentifier] =
+          encryptedScore;
       } else {
-        reputationScores.eCommerceEncryptedScores.push({
-          providerIdentifier,
-          encryptedScore,
-        });
+        reputationScores.eCommerceEncryptedScores[providerIdentifier] =
+          encryptedScore;
       }
       await ctx.stub.putState(
         id,
